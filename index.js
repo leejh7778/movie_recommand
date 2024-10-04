@@ -9,7 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  res.send('Hello from Node server!');
+  res.send('Hello from Node server!!!');
 });
 
 // 랜덤 영화 불러오기
