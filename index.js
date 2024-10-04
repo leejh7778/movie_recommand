@@ -4,25 +4,18 @@ const spawn = require('child_process').spawn;
 const path = require('path');
 const port = 8080;
 const app = express();
+require('dotenv').config();
 
 app.use(cors());
 app.use(express.json());
 
-// const pythonPath = path.join(
-//   'C:',
-//   'conda',
-//   'envs',
-//   'recom_env',
-//   'python.exe'
-// );
+const isDevelopment = () => {
+  return process.env.NODE_ENV === 'development';
+};
 
-const pythonPath = path.join(
-  '/home/ubuntu/miniconda',
-  'envs',
-  'myenv',
-  'bin',
-  'python3'
-);
+const pythonExePath = isDevelopment()
+  ? path.join('C:', 'conda', 'envs', 'recom_env', 'python.exe')
+  : path.join('/home/ubuntu/miniconda', 'envs', 'myenv', 'bin', 'python3');
 
 app.get('/', (req, res) => {
   res.send('Hello from Node server!!!');
@@ -30,8 +23,10 @@ app.get('/', (req, res) => {
 
 // 랜덤 영화 불러오기
 app.get('/random/:count', (req, res) => {
+  const scriptPath = path.join(__dirname, 'resolver.py');
+
   const count = req.params.count;
-  const result = spawn(pythonPath, [scriptPath, 'random', count]);
+  const result = spawn(pythonExePath, [scriptPath, 'random', count]);
 
   let responseData = '';
 
@@ -62,7 +57,7 @@ app.get('/latest/:count', (req, res) => {
   const scriptPath = path.join(__dirname, 'resolver.py');
 
   const count = req.params.count;
-  const result = spawn(pythonPath, [scriptPath, 'latest', count]);
+  const result = spawn(pythonExePath, [scriptPath, 'latest', count]);
 
   let responseData = '';
 
@@ -94,7 +89,7 @@ app.get('/genres/:genre/:count', (req, res) => {
 
   const genre = req.params.genre;
   const count = req.params.count;
-  const result = spawn(pythonPath, [scriptPath, 'genres', genre, count]);
+  const result = spawn(pythonExePath, [scriptPath, 'genres', genre, count]);
 
   let responseData = '';
 
@@ -124,7 +119,7 @@ app.get('/item-based/:item', (req, res) => {
   const scriptPath = path.join(__dirname, 'recommender.py');
 
   const item = req.params.item;
-  const result = spawn(pythonPath, [scriptPath, 'item-based', item]);
+  const result = spawn(pythonExePath, [scriptPath, 'item-based', item]);
 
   let responseData = '';
 
